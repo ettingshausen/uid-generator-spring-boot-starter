@@ -16,6 +16,11 @@
 package com.github.wujun234.uid.worker;
 
 import com.github.wujun234.uid.impl.DefaultUidGenerator;
+import com.github.wujun234.uid.utils.DockerUtils;
+import com.github.wujun234.uid.utils.NetUtils;
+import com.github.wujun234.uid.worker.entity.WorkerNodeEntity;
+import org.apache.commons.lang.math.RandomUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Represents a worker id assigner for {@link DefaultUidGenerator}
@@ -36,6 +41,18 @@ public interface WorkerIdAssigner {
      *
      * @return assigned fake worker id
      */
-    long assignFakeWorkerId();
+    @Transactional(rollbackFor = Exception.class)
+    default long assignFakeWorkerId() {
+        WorkerNodeEntity workerNodeEntity = new WorkerNodeEntity();
+        workerNodeEntity.setType(WorkerNodeType.FAKE.value());
+        if (DockerUtils.isDocker()) {
+            workerNodeEntity.setHostName(DockerUtils.getDockerHost());
+            workerNodeEntity.setPort(DockerUtils.getDockerPort() + "-" + RandomUtils.nextInt(100000));
+        } else {
+            workerNodeEntity.setHostName(NetUtils.getLocalAddress());
+            workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(100000));
+        }
+        return workerNodeEntity.getId();
+    }
 
 }

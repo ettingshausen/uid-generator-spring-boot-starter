@@ -58,11 +58,6 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
         return workerNodeEntity.getId();
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public long assignFakeWorkerId() {
-        return buildFakeWorkerNode().getId();
-    }
 
     /**
      * Build worker node entity by IP and PORT
@@ -79,19 +74,6 @@ public class DisposableWorkerIdAssigner implements WorkerIdAssigner {
             workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(100000));
         }
 
-        return workerNodeEntity;
-    }
-
-    private WorkerNodeEntity buildFakeWorkerNode() {
-        WorkerNodeEntity workerNodeEntity = new WorkerNodeEntity();
-        workerNodeEntity.setType(WorkerNodeType.FAKE.value());
-        if (DockerUtils.isDocker()) {
-            workerNodeEntity.setHostName(DockerUtils.getDockerHost());
-            workerNodeEntity.setPort(DockerUtils.getDockerPort() + "-" + RandomUtils.nextInt(100000));
-        }else {
-            workerNodeEntity.setHostName(NetUtils.getLocalAddress());
-            workerNodeEntity.setPort(System.currentTimeMillis() + "-" + RandomUtils.nextInt(100000));
-        }
         return workerNodeEntity;
     }
 }

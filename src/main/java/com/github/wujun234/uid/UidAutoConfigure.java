@@ -1,10 +1,10 @@
 package com.github.wujun234.uid;
 
 import com.github.wujun234.uid.impl.CachedUidGenerator;
-import com.github.wujun234.uid.impl.UidProperties;
-import com.github.wujun234.uid.worker.DisposableWorkerIdAssigner;
-import com.github.wujun234.uid.worker.WorkerIdAssigner;
 import com.github.wujun234.uid.impl.DefaultUidGenerator;
+import com.github.wujun234.uid.impl.UidProperties;
+import com.github.wujun234.uid.worker.SimpleWorkerIdAssigner;
+import com.github.wujun234.uid.worker.WorkerIdAssigner;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -46,6 +46,7 @@ public class UidAutoConfigure {
 	@Bean
 	@ConditionalOnMissingBean
     WorkerIdAssigner workerIdAssigner() {
-		return new DisposableWorkerIdAssigner();
+		// return SimpleWorkerIdAssigner by ettingshausen
+		return new SimpleWorkerIdAssigner();
 	}
 }
